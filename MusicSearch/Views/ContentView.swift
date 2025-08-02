@@ -11,7 +11,7 @@ struct ContentView: View {
     @StateObject var viewModel: SearchViewModel
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 HStack {
                     TextField("Search Music", text: $viewModel.searchText, onCommit: {
@@ -52,6 +52,7 @@ struct ContentView: View {
                 .listStyle(.plain)
             }
         }
+        .navigationTitle("iTunes Search")
     }
 }
 
