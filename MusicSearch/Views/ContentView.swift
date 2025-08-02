@@ -33,12 +33,49 @@ struct ContentView: View {
                     .padding()
                 }
                 List(viewModel.tracks) { track in
-                    let trackName = track.trackName ?? "Unknown"
-                    let trackArtist = track.artistName ?? "Unknown"
-                    Text(trackName + " - " + trackArtist)
+                    TrackRow(track: track)
+                }
+                .listStyle(.plain)
+            }
+        }
+    }
+}
+
+struct TrackRow: View {
+    var track: Track
+
+    var body: some View {
+        HStack(alignment: .top) {
+            if let arworkUrl = track.artworkUrl100, let url = URL(string: arworkUrl) {
+                AsyncImage(url: url) { image in
+                    image
+                } placeholder: {
+                    ProgressView()
+                }
+                .frame(width: 80, height: 80)
+                .cornerRadius(8)
+            }
+
+            VStack(alignment: .leading) {
+                Text(track.artistName ?? "Unknown Artist")
+                    .font(.headline)
+                Text(track.trackName ?? "Unknown Track")
+                    .font(.title3)
+                if let description = track.collectionName {
+                    Text(description)
+                        .font(.caption)
+                        .lineLimit(2)
+                }
+                if let releaseDateString = track.releaseDate, let releaseDateStringFormatted = ISO8601DateFormatter().date(
+                    from: releaseDateString
+                ) {
+                    Text(releaseDateStringFormatted, style: .date)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
         }
+        .padding(.vertical, 4)
     }
 }
 
