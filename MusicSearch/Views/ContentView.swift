@@ -32,6 +32,20 @@ struct ContentView: View {
                     .clipShape(Capsule())
                     .padding()
                 }
+                
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .task {
+                            try? await Task.sleep(nanoseconds: 700_000_000)
+                            viewModel.errorMessage = ""
+                        }
+                }
+
+                if viewModel.isLoading && viewModel.tracks.isEmpty {
+                    ProgressView()
+                }
+
                 List(viewModel.tracks) { track in
                     TrackRow(track: track)
                 }
