@@ -12,10 +12,25 @@ protocol iTunesAPIServiceProtocol {
 }
 
 class iTunesAPIService: iTunesAPIServiceProtocol {
+    let baseUrl = URL(string: "https://itunes.apple.com/search")!
+    let countryCodeFilters: [String] = ["dk"]
+    let searchEntityFilter: String = "musicTrack"
+
     func searchTracks(term: String) async throws -> [Track] {
-        return [
-            Track(trackName: "Track 1", artistName: "Artist 1"),
-            Track(trackName: "Track 2", artistName: "Artist 2")
-        ]
+        let query = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString = "\(baseUrl)?term=\(query)&country=\(countryCodeFilters.joined(separator: ","))&entity=\(searchEntityFilter)"
+
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+
+        let (data, error) = try await URLSession.shared.data(from: url)
+        let apiResponse = try JSONDecoder().decode(APIResponse.self, from: data)
+
+        return apiResponse.results
     }
+}
+
+struct APIResponse: Decodable {
+    let results: [Track]
 }
